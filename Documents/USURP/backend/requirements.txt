@@ -1,0 +1,29 @@
+fastapi==0.110.0
+uvicorn==0.29.0
+slowapi==0.1.9
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+pydantic==2.6.4
+pydantic-settings==2.1.0
+python-jose==3.3.0
+passlib==1.7.4
+python-multipart==0.0.9
+python-dotenv==1.0.0
+cryptography==41.0.7
+# bcrypt 4.x triggers `module 'bcrypt' has no attribute '__about__'` with some passlib builds.
+# Pin to 3.2.2 for compatibility.
+bcrypt==3.2.2
+email-validator==2.1.0
+jose==1.0.0
+PyJWT==2.10.1
+aiofiles==23.2.1
+httpx==0.27.0
+pytest==7.4.4
+reportlab==3.6.13
+jinja2==3.1.4
+weasyprint==62.3
+# Cache and Observability
+redis==5.0.1
+prometheus-client==0.19.0
+sentry-sdk==1.39.2
+# llama-cpp-python==0.2.83  # Désactivé temporairement - nécessite compilation longue
