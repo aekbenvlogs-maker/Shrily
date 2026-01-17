@@ -1,0 +1,181 @@
+name: Security Scan
+
+# Scan de sécurité quotidien
+# RGPD: Aucune donnée personnelle traitée
+
+on:
+  schedule:
+    # Tous les jours à 3h00 UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  dependency-review:
+    name: 🔍 Revue des dépendances
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          
+  secret-scanning:
+    name: 🔐 Scan des secrets
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for secret scanning
+          
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          
+  codeql-analysis:
+    name: 🔬 CodeQL Analysis
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        language: ['python', 'javascript']
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          
+  container-scan:
+    name: 🐳 Scan des images Docker
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Build backend image
+        run: |
+          cd backend
+          docker build -t usurp-backend:scan .
+          
+      - name: Run Trivy scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'usurp-backend:scan'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+  rgpd-compliance-check:
+    name: 📋 Vérification conformité RGPD
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Vérifier cookies et tracking
+        run: |
+          echo "🍪 Vérification absence de tracking non-consenti..."
+          
+          # Patterns tracking interdits sans Tarteaucitron
+          FORBIDDEN_TRACKERS=(
+            "google-analytics\.com"
+            "googletagmanager\.com"
+            "facebook\.com/tr"
+            "doubleclick\.net"
+            "hotjar\.com"
+          )
+          
+          VIOLATIONS=0
+          for tracker in "${FORBIDDEN_TRACKERS[@]}"; do
+            if grep -rE "$tracker" frontend/src/ --include="*.tsx" --include="*.ts" --include="*.jsx" --include="*.js"; then
+              echo "❌ Tracker non-consenti détecté: $tracker"
+              VIOLATIONS=$((VIOLATIONS+1))
+            fi
+          done
+          
+          if [ $VIOLATIONS -gt 0 ]; then
+            echo "❌ $VIOLATIONS violation(s) RGPD tracking détectée(s)"
+            exit 1
+          fi
+          
+          echo "✅ Aucun tracker non-consenti détecté"
+          
+      - name: Vérifier chiffrement des données sensibles
+        run: |
+          echo "🔐 Vérification chiffrement..."
+          
+          # Vérifier que les mots de passe sont hashés
+          if grep -rE "password.*=.*['\"]" backend/app/ --include="*.py" | grep -v "bcrypt\|argon2\|hash"; then
+            echo "❌ Mots de passe potentiellement non hashés détectés"
+            exit 1
+          fi
+          
+          echo "✅ Chiffrement OK"
+          
+      - name: Audit des logs
+        run: |
+          echo "📝 Vérification désensibilisation des logs..."
+          
+          # Patterns de logging de données sensibles
+          if grep -rE "logger\.(info|debug|warning).*password\|email\|phone" backend/app/ --include="*.py"; then
+            echo "⚠️ Logs potentiellement sensibles détectés"
+            # Non-bloquant mais warning
+          fi
+          
+          echo "✅ Audit logs terminé"
+
+  license-compliance:
+    name: 📜 Conformité des licences
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Check Python licenses
+        run: |
+          pip install pip-licenses
+          cd backend
+          pip install -r requirements.txt
+          pip-licenses --format=markdown --output-file=licenses-backend.md
+          
+          echo "✅ Licences backend documentées"
+          
+      - name: Check Node.js licenses
+        run: |
+          cd frontend
+          npm ci --prefer-offline
+          npx license-checker --summary
+          
+          echo "✅ Licences frontend documentées"
