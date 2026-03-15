@@ -1,6 +1,0 @@
-{
-  "/page": "app/page.js",
-  "/inscription/page": "app/inscription/page.js",
-  "/marketplace/page": "app/marketplace/page.js",
-  "/comment-ca-marche/page": "app/comment-ca-marche/page.js"
-}
