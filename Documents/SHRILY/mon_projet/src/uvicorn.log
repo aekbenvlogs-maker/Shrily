@@ -1,0 +1,27 @@
+INFO:     Started server process [31551]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:51444 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51451 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51451 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51779 - "GET /notifications/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51780 - "GET /orders/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51779 - "GET /notifications/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51781 - "GET /orders/user/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51780 - "GET /orders/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51779 - "GET /orders/user/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51781 - "GET /merchants/ HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51780 - "GET /merchants/ HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51781 - "GET /merchants/ HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51780 - "GET /merchants/ HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51781 - "GET /notifications/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51780 - "GET /orders/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51781 - "GET /orders/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51787 - "GET /orders/user/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51788 - "GET /notifications/merchant/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51789 - "GET /orders/user/demo-merchant-id HTTP/1.1" 404 Not Found
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [31551]
