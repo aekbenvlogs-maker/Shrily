@@ -1,2 +1,0 @@
-# Dépendances principales du projet
-stripe
